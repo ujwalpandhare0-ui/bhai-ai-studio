@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#111827">
+<title>Bhai AI Studio — Free Image Maker</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1020;--panel:#141b2e;--line:#29334b;--text:#f5f7ff;--muted:#aab4ca;--accent:#8b5cf6;--accent2:#22d3ee}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top right,#25204b 0,transparent 36%),var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+main{max-width:760px;margin:auto;padding:22px 15px 45px}.brand{display:flex;align-items:center;gap:12px;margin:8px 0 22px}.logo{width:48px;height:48px;border-radius:15px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;font-size:25px}.brand h1{font-size:23px;line-height:1.15;margin:0}.brand p{margin:4px 0 0;color:var(--muted);font-size:13px}
+.card{background:rgba(20,27,46,.94);border:1px solid var(--line);border-radius:20px;padding:18px;margin:14px 0;box-shadow:0 12px 32px #0002}label{display:block;font-weight:650;margin:0 0 8px}textarea,select{width:100%;background:#0b1020;border:1px solid #35405b;border-radius:12px;color:var(--text);padding:13px;font:inherit}textarea{min-height:112px;resize:vertical}select{min-height:46px} .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:15px}.hint{color:var(--muted);font-size:12px;margin-top:6px}.btn{border:0;border-radius:12px;padding:13px 16px;font:700 15px system-ui;cursor:pointer;width:100%;margin-top:14px;background:linear-gradient(100deg,var(--accent),#6366f1);color:white}.btn:disabled{opacity:.6;cursor:wait}.secondary{background:#242d45;border:1px solid #3a4561}.status{font-size:13px;color:var(--muted);margin-top:10px;min-height:20px}.result{display:none;text-align:center}.result img{max-width:100%;height:auto;max-height:70vh;border-radius:14px;border:1px solid var(--line);background:#080b13}.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.sample{display:inline-block;border:1px solid #3b4561;background:#202942;color:#e5e7eb;border-radius:999px;padding:7px 10px;margin:4px 3px 0 0;font-size:12px;cursor:pointer}.note{font-size:12px;color:var(--muted)}footer{text-align:center;color:var(--muted);font-size:12px;margin-top:22px}a{color:#a5b4fc}
+@media(max-width:420px){.grid{grid-template-columns:1fr}.card{padding:14px}.brand h1{font-size:21px}}
+</style>
+</head>
+<body>
+<main>
+  <header class="brand"><div class="logo">🎨</div><div><h1>Bhai AI Studio</h1><p>Apne idea ko image mein badlo · Mobile friendly</p></div></header>
+  <section class="card">
+    <label for="prompt">Kaisi image chahiye, bhai?</label>
+    <textarea id="prompt" placeholder="Example: cute 3D cartoon Indian boy in a magical forest, cinematic lighting, highly detailed"></textarea>
+    <div class="hint">Prompt English mein likhne se aksar behtar results milte hain. Neeche example tap kar sakte ho.</div>
+    <div>
+      <button class="sample" data-p="Cute 3D cartoon Indian boy, big expressive eyes, blue hoodie, magical forest, cinematic lighting, detailed render">3D Cartoon</button>
+      <button class="sample" data-p="A romantic sunset over a lake, two cute cartoon characters, soft golden light, dreamy cinematic illustration">Love Story</button>
+      <button class="sample" data-p="A majestic tiger in a misty jungle, photorealistic, dramatic cinematic lighting, ultra detailed">Realistic</button>
+      <button class="sample" data-p="A futuristic neon city at night, anime illustration, glowing signs, dramatic composition">Anime</button>
+    </div>
+    <div class="grid">
+      <div><label for="style">Image style</label><select id="style"><option value="3D cartoon, high quality render">3D Cartoon</option><option value="photorealistic, cinematic lighting">Realistic</option><option value="anime illustration, detailed">Anime</option><option value="digital painting, fantasy art">Fantasy Art</option><option value="watercolor illustration">Watercolor</option><option value="cute 3D chibi illustration">Cute Chibi</option></select></div>
+      <div><label for="ratio">Image format</label><select id="ratio"><option value="16:9">YouTube landscape (16:9)</option><option value="9:16">Reel / Shorts (9:16)</option><option value="1:1">Square (1:1)</option><option value="4:5">Instagram portrait (4:5)</option></select></div>
+    </div>
+    <button id="generate" class="btn">✨ Generate Image</button>
+    <div id="status" class="status" role="status">Ready — prompt likho aur Generate dabao.</div>
+    <p class="note">Free public service par depend karta hai. Kabhi-kabhi queue, limit ya service changes ki wajah se generation fail ho sakti hai.</p>
+  </section>
+  <section id="result" class="card result">
+    <h2 style="margin:0 0 12px;font-size:19px">Teri image ✨</h2>
+    <img id="output" alt="Generated AI image">
+    <div class="actions"><button id="download" class="btn">📥 Save Image</button><button id="again" class="btn secondary">🔁 Try Again</button></div>
+    <p class="note">Agar Save Image kaam na kare, image ko long-press karke “Download image” try karo.</p>
+  </section>
+  <section class="card">
+    <strong>Kaise use karein?</strong>
+    <ol style="padding-left:20px;margin-bottom:0"><li>Prompt likho ya example choose karo.</li><li>Style aur format select karo.</li><li>Generate Image dabao aur wait karo.</li><li>Image khulne par Save Image dabao.</li></ol>
+  </section>
+  <footer>Bhai AI Studio · Unofficial demo using a third-party image service. Service limits and terms may change.</footer>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+let currentUrl='';
+document.querySelectorAll('.sample').forEach(b=>b.addEventListener('click',()=>{$('prompt').value=b.dataset.p;}));
+function ratioText(r){return {'16:9':'wide landscape composition, 16:9 aspect ratio','9:16':'vertical portrait composition, 9:16 aspect ratio','1:1':'square composition, 1:1 aspect ratio','4:5':'portrait composition, 4:5 aspect ratio'}[r]||r;}
+function makeUrl(){
+ const p=$('prompt').value.trim();
+ if(!p){$('status').textContent='Bhai, pehle image ka description likh.';return null;}
+ const full=`${p}, ${$('style').value}, ${ratioText($('ratio').value)}, high detail, beautiful composition, no watermark`;
+ // Legacy public endpoint may be limited or unavailable; no key is embedded in this page.
+ return 'https://image.pollinations.ai/prompt/'+encodeURIComponent(full)+'?width='+({'16:9':1024,'9:16':576,'1:1':768,'4:5':640}[$('ratio').value])+'&height='+({'16:9':576,'9:16':1024,'1:1':768,'4:5':800}[$('ratio').value])+'&nologo=true&seed='+Math.floor(Math.random()*1000000);
+}
+function generate(){
+ const url=makeUrl();if(!url)return;
+ currentUrl=url;$('result').style.display='block';$('output').removeAttribute('src');
+ $('status').textContent='Image ban rahi hai… thoda wait kar bhai.';
+ $('generate').disabled=true;$('generate').textContent='⏳ Generating…';
+ $('output').onload=()=>{$('status').textContent='Ho gaya bhai! Image ready hai. Save kar le.';$('generate').disabled=false;$('generate').textContent='✨ Generate Image';$('result').scrollIntoView({behavior:'smooth',block:'start'});};
+ $('output').onerror=()=>{$('status').textContent='Image service ne response nahi diya. Thodi der baad try kar, ya official generator khol: pollinations.ai';$('generate').disabled=false;$('generate').textContent='✨ Generate Image';};
+ $('output').src=url;
+}
+$('generate').addEventListener('click',generate);$('again').addEventListener('click',generate);
+$('download').addEventListener('click',async()=>{
+ if(!currentUrl)return;
+ try{const r=await fetch(currentUrl);if(!r.ok)throw Error('fetch failed');const blob=await r.blob();const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='bhai-ai-image.jpg';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000);}
+ catch(e){window.open(currentUrl,'_blank','noopener');$('status').textContent='Image alag tab mein khul gayi. Long-press karke Download image choose kar.';}
+});
+</script>
+</body>
+</html>
